@@ -1,0 +1,145 @@
+🔹 Core Multithreading – Industry Questions
+1️⃣ Why is multithreading required in enterprise applications?
+Because enterprise systems must handle many users at the same time.
+
+Real reasons:
+Web servers handle 1000s of requests concurrently
+Background jobs (email, logging, report generation)
+Better CPU utilization
+Prevents blocking (DB calls, API calls, file I/O)
+
+Example:
+User A → DB query (waiting)
+User B → API call (waiting)
+User C → File upload
+Without multithreading → users wait
+With multithreading → system stays responsive ✅
+
+📌 Enterprise truth:
+Multithreading improves throughput, not just speed.
+
+2️⃣ Difference between Concurrency vs Parallelism (REAL SYSTEMS)
+Aspect	    Concurrency	                Parallelism
+Meaning	    Multiple tasks in progress	Multiple tasks executing simultaneously
+CPU cores	Can be 1	                Requires multiple cores
+Goal	    Responsiveness	            Faster execution
+Example	    1 CPU switching threads	    4 cores running 4 threads
+🧠 Interview one-liner:
+Concurrency is about dealing with many things, parallelism is about doing many things at once.
+
+3️⃣ Why is extending Thread discouraged in production code?
+❌ Problems:
+Java supports single inheritance
+Tightly couples task with thread
+Poor design & low reusability
+✅ Better approach:
+class MyTask implements Runnable {
+    public void run() { }
+}
+Why industry avoids extends Thread:
+✔ Separation of task & execution
+✔ Works with Executor framework
+✔ Better testability
+📌 Enterprise rule:
+"Prefer composition over inheritance."
+
+4️⃣ When should Runnable be preferred over Callable?
+Runnable	                    Callable
+No return value	                Returns value
+Cannot throw checked exception	Can throw checked exception
+Older	                        Used in modern async tasks
+
+Use Runnable when:
+Fire-and-forget tasks
+Logging, cleanup, background tasks
+
+Use Callable when:
+You need a result
+Exception handling is required
+
+Callable<Integer> task = () -> 10 + 20;
+Future<Integer> result = executor.submit(task);
+
+📌 Production fact:
+Callable is preferred for business logic, Runnable for infrastructure tasks.
+
+5️⃣ How does JVM schedule threads at OS level?
+⚙️ JVM does NOT schedule threads directly
+
+Reality:
+JVM creates native OS threads
+
+OS scheduler decides:
+Time slicing
+CPU allocation
+Priority
+
+JVM controls:
+Thread priority (hint, not guarantee)
+Synchronization rules
+
+📌 Interview answer:
+Thread scheduling is OS-dependent and platform-specific.
+
+🔹 Thread Lifecycle – System Questions
+6️⃣ Thread States with REAL Scenarios
+State	        Scenario
+NEW	Thread      object created
+RUNNABLE	    Ready or running
+BLOCKED	        Waiting for lock
+WAITING	        Waiting indefinitely
+TIMED_WAITING	Waiting with timeout
+TERMINATED	    Execution finished
+
+7️⃣ Why does a thread move to BLOCKED state?
+When it tries to enter a synchronized block but another thread owns the lock.
+synchronized(obj) {
+   // Thread 1 holds lock
+}
+Thread 2 → BLOCKED until lock is released.
+📌 Happens in:
+Database connection pools
+Shared caches
+Singleton initialization
+
+8️⃣ WAITING vs TIMED_WAITING (PRODUCTION VIEW)
+WAITING	            TIMED_WAITING
+Waits indefinitely	Waits for fixed time
+wait()	            sleep(ms)
+join()	            join(timeout)
+Needs notify	    Auto wakeup
+
+📌 Enterprise use:
+WAITING → Producer–Consumer
+TIMED_WAITING → Polling, retries, backoff logic
+
+9️⃣ What happens if a thread is started twice?
+Thread t = new Thread();
+t.start();
+t.start(); // ❌
+
+🔥 Runtime Exception
+IllegalThreadStateException
+
+Why?
+Thread lifecycle cannot be restarted once terminated.
+
+📌 Interview gold line:
+Threads are single-use objects.
+
+🔟 How does thread lifecycle impact system performance?
+Bad lifecycle management causes:
+❌ Thread leaks
+❌ Context switching overhead
+❌ Deadlocks
+❌ CPU starvation
+
+Best practices:
+✔ Use thread pools
+✔ Avoid creating threads manually
+✔ Control lifecycle via Executors
+
+ExecutorService executor = Executors.newFixedThreadPool(10);
+
+📌 Enterprise mantra:
+"Manage threads, or threads will manage you."
