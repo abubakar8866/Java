@@ -10,7 +10,7 @@ public class Questions {
 	int n = 0;
 	
 	volatile static boolean flag = true;
-	volatile static int count = 0;
+	volatile static int count = 100;
 	
 	static final Object lock1 = new Object();
     static final Object lock2 = new Object();
@@ -267,9 +267,9 @@ public class Questions {
 //		Thread t4 = new Thread(() -> q2.display2());
 //		
 //		t1.start();
-//		t3.start();
+//		//t3.start();
 //		t2.start();
-//		t4.start();
+//		//t4.start();
 		
 		/*
 		Deadlock
@@ -301,7 +301,7 @@ public class Questions {
 //		
 //		Thread t2 = new Thread(() -> {
 //			synchronized (lock2) {
-//				System.out.println("t2 acquiring lock1");
+//				System.out.println("t2 acquiring lock2");
 //				try {
 //					Thread.sleep(100);
 //				} catch (InterruptedException e) {
@@ -334,7 +334,7 @@ public class Questions {
 //
 //            Thread.sleep(1000);
 //        }
-		
+//		
 		/*
 		wait(), notify(), notifyAll()
 
@@ -372,7 +372,7 @@ public class Questions {
 //
 //        producer.start();
 //        consumer.start();
-		
+//		
 		//Call wait() outside a synchronized block and observe the exception.
 //		Object obj = new Object();
 //		obj.wait();
@@ -392,7 +392,7 @@ public class Questions {
 //		synchronized (q) {
 //		    q.notify();   // only ONE thread wakes up
 //		}
-//		
+		
 //		//Replace notify() with notifyAll() in the same program and compare behavior.
 //		synchronized (q) {
 //			q.notifyAll();
@@ -540,19 +540,31 @@ public class Questions {
 		Performance	            Fast	Slower*/
 		
 		//Update shared data using volatile with multiple threads.
-		Runnable task = () -> {
-            for (int i = 0; i < 1000; i++) {
-                count++;   // not atomic
-            }
-        };
-
-        Thread t1 = new Thread(task);
-        Thread t2 = new Thread(task);
-
-        t1.start();
-        t2.start();
-
-        System.out.println("Final count: " + count);
+		
+//		  Runnable task = () -> {
+//			  for (int i = 0; i < count; i++) { 
+//				  //count++; // not atomic 
+//				  System.out.println("Running...");
+//				  try {
+//					Thread.sleep(2000);
+//				} catch (InterruptedException e) {
+//					// TODO Auto-generated catch block
+//					e.printStackTrace();
+//				}
+//			  		}
+//			  };
+//		  
+//		  
+//		  Thread t1 = new Thread(task); Thread t2 = new Thread(task);
+//		  
+//		  t1.start(); 
+//		  
+//		  Thread.sleep(100);
+//		  
+//		  count = 10;
+//		  
+//		  System.out.println("Final count: " + count);
+		 
 		
 	}
 
